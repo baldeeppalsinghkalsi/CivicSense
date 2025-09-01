@@ -1,93 +1,61 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const Login = () => {
-    const [form, setForm] = useState({ email: "", password: "" });
-    const [error, setError] = useState("");
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-        setError("");
-    };
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
+    setSuccess("");
+  };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Replace with your authentication logic
-        if (!form.email || !form.password) {
-            setError("Please enter both email and password.");
-            return;
-        }
-        // Example: console.log(form);
-        // Redirect or show success message here
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Replace with your backend login endpoint
+      const response = await axios.post("http://localhost:5000/users/login", form);
+      setSuccess("Login successful!");
+      console.log("User data:", response.data);
+    } catch (err) {
+      setError(err.response?.data?.error || "Login failed");
+    }
+  };
 
-    return (
-        <div style={styles.container}>
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <h2>Login</h2>
-                {error && <div style={styles.error}>{error}</div>}
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={handleChange}
-                    style={styles.input}
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={handleChange}
-                    style={styles.input}
-                    required
-                />
-                <button type="submit" style={styles.button}>Login</button>
-            </form>
+  return (
+    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
+      <h2>Login</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
         </div>
-    );
-};
-
-const styles = {
-    container: {
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#f5f5f5",
-    },
-    form: {
-        background: "#fff",
-        padding: "2rem",
-        borderRadius: "8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        display: "flex",
-        flexDirection: "column",
-        minWidth: "300px",
-    },
-    input: {
-        margin: "0.5rem 0",
-        padding: "0.75rem",
-        borderRadius: "4px",
-        border: "1px solid #ccc",
-        fontSize: "1rem",
-    },
-    button: {
-        marginTop: "1rem",
-        padding: "0.75rem",
-        borderRadius: "4px",
-        border: "none",
-        background: "#1976d2",
-        color: "#fff",
-        fontWeight: "bold",
-        cursor: "pointer",
-        fontSize: "1rem",
-    },
-    error: {
-        color: "red",
-        marginBottom: "0.5rem",
-    },
+        <div style={{ marginTop: "10px" }}>
+          <label>Password:</label>
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" style={{ marginTop: "20px" }}>
+          Login
+        </button>
+      </form>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
+    </div>
+  );
 };
 
 export default Login;
